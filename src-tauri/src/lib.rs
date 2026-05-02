@@ -4,6 +4,7 @@ pub mod error;
 pub mod types;
 pub mod bms_data;
 pub mod transport;
+pub mod register_map;
 
 #[tauri::command]
 fn greet(name: &str) -> String {
