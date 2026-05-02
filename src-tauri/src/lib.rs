@@ -2,6 +2,7 @@
 
 pub mod error;
 pub mod types;
+pub mod bms_data;
 
 #[tauri::command]
 fn greet(name: &str) -> String {
