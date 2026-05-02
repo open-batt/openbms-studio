@@ -1,3 +1,77 @@
+use std::io::{Read, Write};
+use std::time::Duration;
+use std::sync::Mutex;
+use serialport::SerialPort;
+use crate::error::BmsError;
+use super::BmsTransport;
+
+const DEVICE_ADDRESS: u8 = 0x01;
+const RESPONSE_TIMEOUT_MS: u64 = 500;
+
+pub struct ModbusRtu {
+    port: Mutex<Box<dyn SerialPort>>,
+}
+
+impl ModbusRtu {
+    pub fn new(port_name: &str, baud_rate: u32) -> Result<Self, BmsError> {
+        let port = serialport::new(port_name, baud_rate)
+            .timeout(Duration::from_millis(RESPONSE_TIMEOUT_MS))
+            .open()
+            .map_err(|e| BmsError::SerialPort(e.to_string()))?;
+        Ok(Self { port: Mutex::new(port) })
+    }
+
+    fn send_and_receive(&mut self, request: &[u8], expected_response_len: usize) -> Result<Vec<u8>, BmsError> {
+        let mut port = self.port.lock().map_err(|_| BmsError::SerialPort("mutex poisoned".into()))?;
+        port.write_all(request).map_err(|e| BmsError::SerialPort(e.to_string()))?;
+        port.flush().map_err(|e| BmsError::SerialPort(e.to_string()))?;
+
+        let mut response = vec![0u8; expected_response_len];
+        port.read_exact(&mut response).map_err(|e| {
+            if e.kind() == std::io::ErrorKind::TimedOut {
+                BmsError::Timeout
+            } else {
+                BmsError::SerialPort(e.to_string())
+            }
+        })?;
+        Ok(response)
+    }
+}
+
+impl BmsTransport for ModbusRtu {
+    fn read_word(&mut self, address: u8) -> Result<u16, BmsError> {
+        let request = build_read_request(DEVICE_ADDRESS, address, 1);
+        // response: addr(1) + fc(1) + byte_count(1) + data(2) + crc(2) = 7
+        let response = self.send_and_receive(&request, 7)?;
+        let data = parse_read_response(DEVICE_ADDRESS, &response)?;
+        if data.len() < 2 {
+            return Err(BmsError::InvalidResponse("word response too short".into()));
+        }
+        Ok(u16::from_be_bytes([data[0], data[1]]))
+    }
+
+    fn write_word(&mut self, address: u8, value: u16) -> Result<(), BmsError> {
+        let request = build_write_word_request(DEVICE_ADDRESS, address, value);
+        let response = self.send_and_receive(&request, 8)?;
+        parse_write_echo(DEVICE_ADDRESS, 0x06, address, &response)
+    }
+
+    fn read_block(&mut self, address: u8, num_registers: u16) -> Result<Vec<u8>, BmsError> {
+        let request = build_read_request(DEVICE_ADDRESS, address, num_registers);
+        // response: addr(1) + fc(1) + byte_count(1) + data(num_registers*2) + crc(2)
+        let expected_len = 5 + (num_registers as usize * 2);
+        let response = self.send_and_receive(&request, expected_len)?;
+        parse_read_response(DEVICE_ADDRESS, &response)
+    }
+
+    fn write_block(&mut self, address: u8, data: &[u8]) -> Result<(), BmsError> {
+        let request = build_write_multiple_request(DEVICE_ADDRESS, address, data);
+        // echo: addr(1) + fc(1) + addr_hi(1) + addr_lo(1) + qty_hi(1) + qty_lo(1) + crc(2) = 8
+        let response = self.send_and_receive(&request, 8)?;
+        parse_write_echo(DEVICE_ADDRESS, 0x10, address, &response)
+    }
+}
+
 pub(crate) fn crc16(data: &[u8]) -> u16 {
     let mut crc: u16 = 0xFFFF;
     for &byte in data {
