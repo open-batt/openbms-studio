@@ -5,6 +5,7 @@ pub mod types;
 pub mod bms_data;
 pub mod transport;
 pub mod register_map;
+pub mod polling;
 
 #[tauri::command]
 fn greet(name: &str) -> String {
