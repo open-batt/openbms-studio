@@ -47,8 +47,19 @@ impl Serialize for BmsError {
 
 impl From<BmsError> for CommsError {
     fn from(e: BmsError) -> Self {
+        let code = match &e {
+            BmsError::SerialPort(_) => "SerialPort",
+            BmsError::Timeout => "Timeout",
+            BmsError::CrcMismatch { .. } => "CrcMismatch",
+            BmsError::ModbusException { .. } => "ModbusException",
+            BmsError::InvalidResponse(_) => "InvalidResponse",
+            BmsError::NotConnected => "NotConnected",
+            BmsError::UnknownRegister(_) => "UnknownRegister",
+            BmsError::UnknownField(_) => "UnknownField",
+        }
+        .to_string();
         CommsError {
-            code: format!("{:?}", e).split('(').next().unwrap_or("Unknown").to_string(),
+            code,
             message: e.to_string(),
         }
     }
