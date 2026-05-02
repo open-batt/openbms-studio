@@ -61,6 +61,62 @@ pub(crate) fn build_write_multiple_request(device: u8, address: u8, data: &[u8])
     frame
 }
 
+pub(crate) fn parse_read_response(device: u8, frame: &[u8]) -> Result<Vec<u8>, crate::error::BmsError> {
+    use crate::error::BmsError;
+
+    if frame.len() < 5 {
+        return Err(BmsError::InvalidResponse("frame too short".into()));
+    }
+    if frame[0] != device {
+        return Err(BmsError::InvalidResponse("device address mismatch".into()));
+    }
+
+    let payload = &frame[..frame.len() - 2];
+    let expected_crc = crc16(payload);
+    let got_crc = (frame[frame.len() - 1] as u16) << 8 | frame[frame.len() - 2] as u16;
+    if expected_crc != got_crc {
+        return Err(BmsError::CrcMismatch { expected: expected_crc, got: got_crc });
+    }
+
+    if frame[1] & 0x80 != 0 {
+        let original_fc = frame[1] & 0x7F;
+        let exception_code = frame[2];
+        return Err(BmsError::ModbusException { function_code: original_fc, exception_code });
+    }
+
+    let byte_count = frame[2] as usize;
+    Ok(frame[3..3 + byte_count].to_vec())
+}
+
+pub(crate) fn parse_write_echo(
+    device: u8,
+    expected_fc: u8,
+    expected_addr: u8,
+    frame: &[u8],
+) -> Result<(), crate::error::BmsError> {
+    use crate::error::BmsError;
+
+    if frame.len() < 8 {
+        return Err(BmsError::InvalidResponse("write echo too short".into()));
+    }
+    if frame[0] != device {
+        return Err(BmsError::InvalidResponse("device address mismatch".into()));
+    }
+    if frame[1] != expected_fc {
+        return Err(BmsError::InvalidResponse("function code mismatch".into()));
+    }
+    if frame[3] != expected_addr {
+        return Err(BmsError::InvalidResponse("register address mismatch".into()));
+    }
+    let payload = &frame[..frame.len() - 2];
+    let expected_crc = crc16(payload);
+    let got_crc = (frame[frame.len() - 1] as u16) << 8 | frame[frame.len() - 2] as u16;
+    if expected_crc != got_crc {
+        return Err(BmsError::CrcMismatch { expected: expected_crc, got: got_crc });
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -115,5 +171,56 @@ mod tests {
         let expected_crc = crc16(&frame[..9]);
         let got_crc = (frame[10] as u16) << 8 | frame[9] as u16;
         assert_eq!(got_crc, expected_crc);
+    }
+
+    #[test]
+    fn parse_read_response_cell_voltages() {
+        // Build a valid read response for 7 cell voltages (14 bytes payload)
+        let mut response = vec![
+            0x01u8, 0x03, 0x0E,
+            0x0F, 0xA0, // cell 1: 4000 mV
+            0x0F, 0xA2, // cell 2: 4002 mV
+            0x0F, 0x9E, // cell 3: 3998 mV
+            0x0F, 0xA1, // cell 4: 4001 mV
+            0x0F, 0x9F, // cell 5: 3999 mV
+            0x0F, 0xA0, // cell 6: 4000 mV
+            0x0F, 0xA3, // cell 7: 4003 mV
+        ];
+        let crc = crc16(&response);
+        response.push((crc & 0xFF) as u8);
+        response.push((crc >> 8) as u8);
+
+        let data = parse_read_response(0x01, &response).unwrap();
+        assert_eq!(data.len(), 14);
+        assert_eq!(u16::from_be_bytes([data[0], data[1]]), 4000);
+        assert_eq!(u16::from_be_bytes([data[2], data[3]]), 4002);
+    }
+
+    #[test]
+    fn parse_read_response_crc_mismatch() {
+        let frame = vec![0x01u8, 0x03, 0x02, 0x0F, 0xA0, 0xFF, 0xFF]; // bad CRC
+        let result = parse_read_response(0x01, &frame);
+        assert!(matches!(result, Err(crate::error::BmsError::CrcMismatch { .. })));
+    }
+
+    #[test]
+    fn parse_read_response_modbus_exception() {
+        // Error response: FC|0x80=0x83, exception code 0x02
+        let mut response = vec![0x01u8, 0x83, 0x02];
+        let crc = crc16(&response);
+        response.push((crc & 0xFF) as u8);
+        response.push((crc >> 8) as u8);
+
+        let result = parse_read_response(0x01, &response);
+        assert!(matches!(
+            result,
+            Err(crate::error::BmsError::ModbusException { function_code: 0x03, exception_code: 0x02 })
+        ));
+    }
+
+    #[test]
+    fn parse_write_echo_valid() {
+        let request = build_write_word_request(0x01, 0x42, 0x0001);
+        assert!(parse_write_echo(0x01, 0x06, 0x42, &request).is_ok());
     }
 }
