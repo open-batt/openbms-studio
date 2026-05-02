@@ -17,3 +17,22 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
+
+#[cfg(test)]
+mod ts_export {
+    use crate::{bms_data::BmsData, error::CommsError, types::*};
+    use ts_rs::TS;
+
+    #[test]
+    fn export_bindings() {
+        RegisterDef::export_all().unwrap();
+        RegisterValue::export_all().unwrap();
+        Access::export_all().unwrap();
+        ValueType::export_all().unwrap();
+        FieldDef::export_all().unwrap();
+        FieldType::export_all().unwrap();
+        PrimitiveType::export_all().unwrap();
+        BmsData::export_all().unwrap();
+        CommsError::export_all().unwrap();
+    }
+}
