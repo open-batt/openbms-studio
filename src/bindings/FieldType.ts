@@ -2,7 +2,7 @@
 import type { PrimitiveType } from "./PrimitiveType";
 
 export type FieldType =
-	| { Bit: number }
-	| { BitRange: { high: number; low: number } }
-	| { ByteField: { byte_offset: number; prim: PrimitiveType } }
-	| { PrimitiveArray: { count: number; prim: PrimitiveType } };
+    | { Bit: number }
+    | { BitRange: { high: number; low: number } }
+    | { ByteField: { byte_offset: number; prim: PrimitiveType } }
+    | { PrimitiveArray: { count: number; prim: PrimitiveType } };

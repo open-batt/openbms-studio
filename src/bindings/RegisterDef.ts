@@ -4,8 +4,8 @@ import type { FieldDef } from "./FieldDef";
 import type { ValueType } from "./ValueType";
 
 export type RegisterDef = {
-	name: string;
-	access: Access;
-	value_type: ValueType;
-	fields: Array<FieldDef>;
+    name: string;
+    access: Access;
+    value_type: ValueType;
+    fields: Array<FieldDef>;
 };

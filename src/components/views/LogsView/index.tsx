@@ -1,3 +1,3 @@
 export function LogsView() {
-	return <h1>Logs View</h1>;
+    return <h1>Logs View</h1>;
 }
