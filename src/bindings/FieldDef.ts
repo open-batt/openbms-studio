@@ -2,4 +2,4 @@
 import type { Access } from "./Access";
 import type { FieldType } from "./FieldType";
 
-export type FieldDef = { name: string, access: Access, field_type: FieldType, };
+export type FieldDef = { name: string; access: Access; field_type: FieldType };
