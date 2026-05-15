@@ -3,7 +3,10 @@ import { Box } from "@mantine/core";
 export function Led({
 	color = "green",
 	size = 8,
-}: { color?: string; size?: number }) {
+}: {
+	color?: string;
+	size?: number;
+}) {
 	return (
 		<Box
 			style={{
