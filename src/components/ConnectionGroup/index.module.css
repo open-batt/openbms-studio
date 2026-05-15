@@ -1,0 +1,13 @@
+.root {
+    display: flex;
+    align-items: center;
+    gap: var(--mantine-spacing-xs);
+}
+
+.label {
+    margin-bottom: 0;
+}
+
+.wrapper {
+    flex: 1;
+}
