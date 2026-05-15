@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Background -->
+  <rect width="100" height="100" rx="18" fill="none"/>
+  <!-- Top nub — bottom edge flush with border top at y=10 -->
+  <rect x="36" y="2" width="28" height="8" rx="4" fill="none" stroke="#7c5cbf" stroke-width="3.5"/>
+  <!-- Outer border — top edge at y=10 so nub aligns -->
+  <rect x="6" y="10" width="88" height="82" rx="14" fill="none" stroke="#7c5cbf" stroke-width="4"/>
+  <!-- ECG / heartbeat line — centered in upper area -->
+  <polyline
+    points="10,48 28,48 34,48 40,26 46,68 50,36 54,54 58,48 90,48"
+    fill="none" stroke="#7c5cbf" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- Battery bar outline — well below the ECG line -->
+  <rect x="16" y="80" width="68" height="8" rx="3" fill="none" stroke="#7c5cbf" stroke-width="3"/>
+  <!-- Battery bar fill (~60%) -->
+  <rect x="18" y="82" width="38" height="4" rx="1.5" fill="#7c5cbf"/>
+</svg>
