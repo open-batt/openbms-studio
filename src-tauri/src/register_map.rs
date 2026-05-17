@@ -71,7 +71,7 @@ pub(crate) fn addr(name: &str) -> Option<RegisterAddr> {
         "HardwareVersion"          => Some(RegisterAddr { address: 0x5B, num_registers: 16, byte_count: 32 }),
         "BoardSerialNumber"        => Some(RegisterAddr { address: 0x5C, num_registers: 16, byte_count: 32 }),
         "LastCommunicationTimestamp" => Some(RegisterAddr { address: 0x5D, num_registers: 2, byte_count: 4 }),
-        "UptimeCounter"            => Some(RegisterAddr { address: 0x5E, num_registers: 1, byte_count: 2 }),
+        "UptimeCounter"            => Some(RegisterAddr { address: 0x5E, num_registers: 2, byte_count: 4 }),
         "BalancingStatus"          => Some(RegisterAddr { address: 0x5F, num_registers: 1, byte_count: 2 }),
         "BalancingControl"         => Some(RegisterAddr { address: 0x60, num_registers: 1, byte_count: 2 }),
         _ => None,
@@ -307,7 +307,7 @@ pub fn all_registers() -> Vec<RegisterDef> {
         RegisterDef { name: "HardwareVersion".into(),            access: Access::Read, value_type: ValueType::Block(32), fields: vec![] },
         RegisterDef { name: "BoardSerialNumber".into(),          access: Access::Read, value_type: ValueType::Block(32), fields: vec![] },
         RegisterDef { name: "LastCommunicationTimestamp".into(), access: Access::Read, value_type: ValueType::Block(4),  fields: vec![] },
-        RegisterDef { name: "UptimeCounter".into(),              access: Access::Read, value_type: ValueType::Word,      fields: vec![] },
+        RegisterDef { name: "UptimeCounter".into(),              access: Access::Read, value_type: ValueType::Block(4),  fields: vec![] },
         RegisterDef {
             name: "BalancingStatus".into(), access: Access::Read, value_type: ValueType::Word,
             fields: vec![
