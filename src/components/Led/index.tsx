@@ -14,7 +14,6 @@ export function Led({
                 height: size,
                 borderRadius: "50%",
                 backgroundColor: `var(--mantine-color-${color}-6)`,
-                boxShadow: `0 0 6px 1px var(--mantine-color-${color}-4)`,
                 flexShrink: 0,
             }}
         />
