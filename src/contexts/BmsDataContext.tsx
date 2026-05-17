@@ -7,6 +7,9 @@ import {
 } from "react";
 import { listen } from "@tauri-apps/api/event";
 import type { BmsData } from "@/bindings/BmsData";
+import { MOCK_DATASETS } from "@/mocks/datasets";
+
+const MOCK_DATA_CYCLE_MS = 5000;
 
 interface BmsDataContextType {
     bmsData: BmsData | null;
@@ -15,7 +18,7 @@ interface BmsDataContextType {
 
 const BmsDataContext = createContext<BmsDataContextType | null>(null);
 
-export const BmsDataProvider = ({ children }: { children: ReactNode }) => {
+export const TauriBmsDataProvider = ({ children }: { children: ReactNode }) => {
     const [bmsData, setBmsData] = useState<BmsData | null>(null);
     const [error, setError] = useState<string | null>(null);
 
@@ -53,10 +56,35 @@ export const BmsDataProvider = ({ children }: { children: ReactNode }) => {
     );
 };
 
-export const useBmsData = (): BmsDataContextType => {
+export const MockBmsDataProvider = ({ children }: { children: ReactNode }) => {
+    const [idx, setIdx] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setIdx((i) => (i + 1) % MOCK_DATASETS.length);
+        }, MOCK_DATA_CYCLE_MS);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    return (
+        <BmsDataContext.Provider
+            value={{ bmsData: MOCK_DATASETS[idx].bmsData, error: null }}
+        >
+            {children}
+        </BmsDataContext.Provider>
+    );
+};
+
+// Default export for backward compatibility
+export const BmsDataProvider = TauriBmsDataProvider;
+
+export const useBmsDataContext = (): BmsDataContextType => {
     const context = useContext(BmsDataContext);
     if (!context) {
-        throw new Error("useBmsData must be used within a BmsDataProvider");
+        throw new Error(
+            "useBmsDataContext must be used within a BmsDataProvider",
+        );
     }
     return context;
 };

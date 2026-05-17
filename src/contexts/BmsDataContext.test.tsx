@@ -1,10 +1,10 @@
 import { render, screen, act } from "@testing-library/react";
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
-import { MockBmsDataProvider, useBmsData } from "./BmsDataContext";
+import { MockBmsDataProvider, useBmsDataContext } from "./BmsDataContext";
 import { MOCK_DATASETS } from "@/mocks/datasets";
 
 function DataDisplay() {
-    const { bmsData } = useBmsData();
+    const { bmsData } = useBmsDataContext();
     return <div data-testid="soc">{bmsData?.relative_soc ?? "null"}</div>;
 }
 
@@ -57,12 +57,12 @@ describe("MockBmsDataProvider", () => {
     });
 });
 
-describe("useBmsData", () => {
+describe("useBmsDataContext", () => {
     it("throws when used outside a provider", () => {
         // Suppress React's error boundary console output
         const spy = vi.spyOn(console, "error").mockImplementation(() => {});
         expect(() => render(<DataDisplay />)).toThrow(
-            "useBmsData must be used within a BmsDataProvider",
+            "useBmsDataContext must be used within a BmsDataProvider",
         );
         spy.mockRestore();
     });
