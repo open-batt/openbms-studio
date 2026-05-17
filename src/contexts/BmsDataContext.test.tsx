@@ -1,141 +1,69 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { BmsDataProvider, useBmsData } from "./BmsDataContext";
-import type { BmsData } from "@/bindings/BmsData";
+import { render, screen, act } from "@testing-library/react";
+import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+import { MockBmsDataProvider, useBmsData } from "./BmsDataContext";
+import { MOCK_DATASETS } from "@/mocks/datasets";
 
-// Mock the tauri events
-vi.mock("@tauri-apps/api/event");
+function DataDisplay() {
+    const { bmsData } = useBmsData();
+    return <div data-testid="soc">{bmsData?.relative_soc ?? "null"}</div>;
+}
 
-describe("BmsDataContext", () => {
+describe("MockBmsDataProvider", () => {
     beforeEach(() => {
-        vi.clearAllMocks();
+        vi.useFakeTimers();
     });
 
-    it("should provide default bms data", () => {
-        const TestComponent = () => {
-            const { bmsData, error } = useBmsData();
-            return (
-                <div>
-                    <div data-testid="error">
-                        {error ? "error" : "no-error"}
-                    </div>
-                    <div data-testid="data">
-                        {bmsData ? "has-data" : "no-data"}
-                    </div>
-                </div>
-            );
-        };
+    afterEach(() => {
+        vi.useRealTimers();
+    });
 
+    it("provides the first dataset immediately", () => {
         render(
-            <BmsDataProvider>
-                <TestComponent />
-            </BmsDataProvider>,
+            <MockBmsDataProvider>
+                <DataDisplay />
+            </MockBmsDataProvider>,
         );
-
-        expect(screen.getByTestId("error")).toHaveTextContent("no-error");
-        expect(screen.getByTestId("data")).toHaveTextContent("no-data");
+        expect(screen.getByTestId("soc").textContent).toBe(
+            String(MOCK_DATASETS[0].bmsData.relative_soc),
+        );
     });
 
-    it("should update data when bms_data event fires", async () => {
-        const mockData: BmsData = {
-            cell_voltages: new Array(13).fill(3.2),
-            pack_voltage: 41.6,
-            current: 100,
-            temperature: 25.5,
-            soc: 50,
-            soh: 95,
-            state: "charging",
-        };
-
-        let fireEvent: ((data: BmsData) => void) | null = null;
-
-        const { listen } = await import("@tauri-apps/api/event");
-        vi.mocked(listen).mockImplementation(
-            (event: string, handler: (data: { payload: BmsData }) => void) => {
-                if (event === "bms_data") {
-                    fireEvent = (data: BmsData) => handler({ payload: data });
-                }
-                return Promise.resolve(() => {});
-            },
-        );
-
-        const TestComponent = () => {
-            const { bmsData } = useBmsData();
-            return (
-                <div data-testid="voltage">
-                    {bmsData?.pack_voltage || "no-voltage"}
-                </div>
-            );
-        };
-
+    it("advances to next dataset after 5 seconds", () => {
         render(
-            <BmsDataProvider>
-                <TestComponent />
-            </BmsDataProvider>,
+            <MockBmsDataProvider>
+                <DataDisplay />
+            </MockBmsDataProvider>,
         );
-
-        expect(screen.getByTestId("voltage")).toHaveTextContent("no-voltage");
-
-        if (fireEvent) {
-            fireEvent(mockData);
-            await waitFor(() => {
-                expect(screen.getByTestId("voltage")).toHaveTextContent("41.6");
-            });
-        }
+        act(() => {
+            vi.advanceTimersByTime(5000);
+        });
+        expect(screen.getByTestId("soc").textContent).toBe(
+            String(MOCK_DATASETS[1].bmsData.relative_soc),
+        );
     });
 
-    it("should handle comms_error event", async () => {
-        let fireError: ((message: string) => void) | null = null;
-
-        const { listen } = await import("@tauri-apps/api/event");
-        vi.mocked(listen).mockImplementation(
-            (event: string, handler: (data: { payload: string }) => void) => {
-                if (event === "comms_error") {
-                    fireError = (message: string) =>
-                        handler({ payload: message });
-                }
-                return Promise.resolve(() => {});
-            },
-        );
-
-        const TestComponent = () => {
-            const { error } = useBmsData();
-            return <div data-testid="error-message">{error || "no-error"}</div>;
-        };
-
+    it("wraps back to dataset 0 after all datasets", () => {
         render(
-            <BmsDataProvider>
-                <TestComponent />
-            </BmsDataProvider>,
+            <MockBmsDataProvider>
+                <DataDisplay />
+            </MockBmsDataProvider>,
         );
-
-        expect(screen.getByTestId("error-message")).toHaveTextContent(
-            "no-error",
+        act(() => {
+            vi.advanceTimersByTime(5000 * MOCK_DATASETS.length);
+        });
+        expect(screen.getByTestId("soc").textContent).toBe(
+            String(MOCK_DATASETS[0].bmsData.relative_soc),
         );
-
-        if (fireError) {
-            fireError("Connection lost");
-            await waitFor(() => {
-                expect(screen.getByTestId("error-message")).toHaveTextContent(
-                    "Connection lost",
-                );
-            });
-        }
     });
+});
 
-    it("should throw error when useBmsData is used outside provider", () => {
-        const TestComponent = () => {
-            useBmsData();
-            return <div>Test</div>;
-        };
-
-        // Suppress console.error for this test
-        const consoleSpy = vi.spyOn(console, "error").mockImplementation();
-
-        expect(() => {
-            render(<TestComponent />);
-        }).toThrow("useBmsData must be used within a BmsDataProvider");
-
-        consoleSpy.mockRestore();
+describe("useBmsData", () => {
+    it("throws when used outside a provider", () => {
+        // Suppress React's error boundary console output
+        const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+        expect(() => render(<DataDisplay />)).toThrow(
+            "useBmsData must be used within a BmsDataProvider",
+        );
+        spy.mockRestore();
     });
 });
