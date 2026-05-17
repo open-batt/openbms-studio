@@ -7,7 +7,7 @@ import {
     formatRegisterHex,
 } from "@/lib/display-meta";
 import type { RegisterValue } from "@/bindings";
-import type { RegisterEntry } from "@/components/ValueRegister";
+import type { RegisterEntry } from "@/components/RegisterTable";
 
 const REGISTER_SIZE = 16;
 
