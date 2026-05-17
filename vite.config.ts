@@ -10,8 +10,9 @@ const host = process.env.TAURI_DEV_HOST;
 export default defineConfig(async () => ({
     plugins: [react()],
     test: {
-        environment: "node",
+        environment: "jsdom",
         globals: true,
+        setupFiles: ["./src/vitest.setup.ts"],
     },
 
     resolve: {
