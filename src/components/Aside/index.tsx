@@ -1,7 +1,7 @@
 import { Button, Divider, Flex, SimpleGrid, Stack, Text } from "@mantine/core";
 import { Gauge } from "@/components/Gauge";
 import { Led } from "@/components/Led";
-import { useBmsData } from "@/hooks/useBmsData";
+import { useBmsDataContext } from "@/contexts/BmsDataContext";
 import { formatTemperature } from "@/lib/format-temperature";
 import { formatMinutes } from "@/lib/format-time";
 
@@ -66,30 +66,38 @@ function ProtectionFlag({ label, fault }: { label: string; fault: boolean }) {
 }
 
 export function Aside() {
-    const { data } = useBmsData();
+    const { bmsData } = useBmsDataContext();
 
     return (
         <Stack h="100%" align="center" p="sm" gap="lg">
-            <Gauge value={data?.relative_soc ?? 0} unit="%" label="SoC" />
+            <Gauge value={bmsData?.relative_soc ?? 0} unit="%" label="SoC" />
 
             <Stack w="100%" gap="xs" mt={8}>
                 <StatRow
                     label="Pack V"
                     value={
-                        data ? `${(data.voltage_mv / 1000).toFixed(2)} V` : "—"
+                        bmsData
+                            ? `${(bmsData.voltage_mv / 1000).toFixed(2)} V`
+                            : "—"
                     }
                 />
                 <StatRow
                     label="Current"
-                    value={data ? `${data.current_ma} mA` : "—"}
+                    value={bmsData ? `${bmsData.current_ma} mA` : "—"}
                 />
                 <StatRow
                     label="Temp"
-                    value={data ? formatTemperature(data.temperature_dk) : "—"}
+                    value={
+                        bmsData
+                            ? formatTemperature(bmsData.temperature_dk)
+                            : "—"
+                    }
                 />
                 <StatRow
                     label="TTE"
-                    value={data ? formatMinutes(data.run_time_to_empty) : "—"}
+                    value={
+                        bmsData ? formatMinutes(bmsData.run_time_to_empty) : "—"
+                    }
                 />
             </Stack>
 
@@ -104,8 +112,9 @@ export function Aside() {
                             label={label}
                             // battery_status is a u16 — only bits 0–15 are meaningful
                             fault={
-                                data
-                                    ? (data.battery_status & (1 << bit)) !== 0
+                                bmsData
+                                    ? (bmsData.battery_status & (1 << bit)) !==
+                                      0
                                     : false
                             }
                         />
