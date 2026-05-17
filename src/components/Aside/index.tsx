@@ -30,7 +30,7 @@ function StatRow({ label, value }: { label: string; value: string }) {
                 {label}
             </Text>
             <Text
-                size="13px"
+                size="sm"
                 c="white"
                 style={{ fontVariantNumeric: "tabular-nums" }}
             >
@@ -57,8 +57,8 @@ function SectionLabel({ children }: { children: string }) {
 function ProtectionFlag({ label, fault }: { label: string; fault: boolean }) {
     return (
         <Flex gap="5px" align="center">
-            <Led color={fault ? "red" : "green"} size={7} />
-            <Text size="11px" c={fault ? "red.4" : "dimmed"}>
+            <Led color={fault ? "red" : "green"} size={10} />
+            <Text size="sm" c={fault ? "red.4" : "dimmed"}>
                 {label}
             </Text>
         </Flex>
@@ -69,10 +69,10 @@ export function Aside() {
     const { data } = useBmsData();
 
     return (
-        <Stack h="100%" align="center" p="16px 12px" gap="8px">
+        <Stack h="100%" align="center" p="16px 12px" gap="lg">
             <Gauge value={data?.relative_soc ?? 0} unit="%" label="SoC" />
 
-            <Stack w="100%" gap="6px" mt="8px">
+            <Stack w="100%" gap="xs" mt="8px">
                 <StatRow
                     label="Pack V"
                     value={
@@ -95,7 +95,7 @@ export function Aside() {
 
             <Divider w="100%" />
 
-            <Stack w="100%" gap="6px">
+            <Stack w="100%" gap="sm">
                 <SectionLabel>Protection</SectionLabel>
                 <SimpleGrid cols={2} spacing="6px">
                     {PROTECTION_FLAGS.map(({ label, bit }) => (
@@ -115,7 +115,7 @@ export function Aside() {
 
             <Divider w="100%" />
 
-            <Stack w="100%" gap="4px">
+            <Stack w="100%" gap="sm">
                 <SectionLabel>Quick Commands</SectionLabel>
                 {QUICK_COMMANDS.map((cmd) => (
                     <Button
