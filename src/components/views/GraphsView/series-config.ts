@@ -36,19 +36,19 @@ export function cellTempToCelsius(raw: number): number {
 export const CHART_GROUPS: ChartGroupDef[] = [
     {
         title: "Voltages",
-        unit: "mV",
+        unit: "V",
         series: [
             {
                 id: "voltage.pack",
                 label: "Pack",
                 color: PACK_COLOR,
-                getValue: (d) => d.voltage_mv,
+                getValue: (d) => 0.001 * d.voltage_mv,
             },
             ...Array.from({ length: 7 }, (_, i) => ({
                 id: `voltage.cell_${i + 1}`,
                 label: `Cell ${i + 1}`,
                 color: CELL_COLORS[i],
-                getValue: (d: BmsData) => d.cell_voltages_mv[i],
+                getValue: (d: BmsData) => 0.001 * d.cell_voltages_mv[i],
             })),
         ],
     },
@@ -97,19 +97,19 @@ export const CHART_GROUPS: ChartGroupDef[] = [
     },
     {
         title: "Currents",
-        unit: "mA",
+        unit: "A",
         series: [
             {
                 id: "current.current",
                 label: "Current",
                 color: PACK_COLOR,
-                getValue: (d) => d.current_ma,
+                getValue: (d) => 0.001 * d.current_ma,
             },
             {
                 id: "current.avg",
                 label: "Avg Current",
                 color: SECONDARY_COLOR,
-                getValue: (d) => d.average_current_ma,
+                getValue: (d) => 0.001 * d.average_current_ma,
             },
         ],
     },

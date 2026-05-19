@@ -2,6 +2,7 @@ import {
     Button,
     Checkbox,
     Flex,
+    Grid,
     Group,
     NumberInput,
     Paper,
@@ -41,10 +42,16 @@ export function GraphsView() {
                 </Button>
             </Group>
             <ScrollArea flex={1} offsetScrollbars>
-                <Stack gap="xs">
+                <Stack gap="md">
                     {CHART_GROUPS.map((group) => (
                         <Flex key={group.title} gap="xs" align="stretch">
-                            <Paper flex={1} withBorder h={300} p={0}>
+                            <Paper
+                                flex={1}
+                                withBorder
+                                radius={0}
+                                h={200}
+                                p="xs"
+                            >
                                 <ChartPanel
                                     group={group}
                                     history={history}
@@ -54,27 +61,33 @@ export function GraphsView() {
                             </Paper>
                             <Stack
                                 w={180}
-                                gap="xs"
+                                gap="sm"
                                 p="xs"
                                 style={{ flexShrink: 0 }}
                             >
-                                <Text size="xs" fw={600} c="dimmed">
+                                <Text size="md" fw={600} c="dimmed">
                                     {group.title}
                                 </Text>
-                                {group.series.map((s) => (
-                                    <Checkbox
-                                        key={s.id}
-                                        label={s.label}
-                                        checked={visibility[s.id] !== false}
-                                        onChange={(e) =>
-                                            handleVisibilityChange(
-                                                s.id,
-                                                e.currentTarget.checked,
-                                            )
-                                        }
-                                        size="xs"
-                                    />
-                                ))}
+                                <Grid gap="sm">
+                                    {group.series.map((s) => (
+                                        <Grid.Col span={6} key={s.id}>
+                                            <Checkbox
+                                                key={s.id}
+                                                label={s.label}
+                                                checked={
+                                                    visibility[s.id] !== false
+                                                }
+                                                onChange={(e) =>
+                                                    handleVisibilityChange(
+                                                        s.id,
+                                                        e.currentTarget.checked,
+                                                    )
+                                                }
+                                                size="sm"
+                                            />
+                                        </Grid.Col>
+                                    ))}
+                                </Grid>
                             </Stack>
                         </Flex>
                     ))}

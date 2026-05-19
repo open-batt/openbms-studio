@@ -37,9 +37,9 @@ export function ChartPanel({
             backgroundColor: "transparent",
             title: {
                 text: group.title,
-                textStyle: { color: "#aaaaaa", fontSize: 12 },
+                textStyle: { color: "#aaaaaa", fontSize: 14 },
                 top: 4,
-                left: 8,
+                left: "center",
             },
             xAxis: {
                 type: "value" as const,
@@ -47,21 +47,21 @@ export function ChartPanel({
                 max: windowSec,
                 axisLabel: {
                     color: "#888888",
-                    fontSize: 10,
+                    fontSize: 12,
                     formatter: (v: number) => v.toFixed(2),
                 },
                 axisLine: { lineStyle: { color: "#444444" } },
                 axisTick: { show: false },
                 name: "s",
-                nameTextStyle: { color: "#888888", fontSize: 10 },
+                nameTextStyle: { color: "#888888", fontSize: 12 },
             },
             yAxis: {
                 type: "value" as const,
                 name: group.unit,
-                nameTextStyle: { color: "#888888", fontSize: 10 },
+                nameTextStyle: { color: "#888888", fontSize: 12 },
                 axisLabel: {
                     color: "#888888",
-                    fontSize: 10,
+                    fontSize: 12,
                     formatter: (v: number) => v.toFixed(2),
                 },
                 axisLine: { show: false },
