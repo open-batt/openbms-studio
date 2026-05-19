@@ -24,4 +24,17 @@ pub struct BmsData {
     pub cell_soc: [u8; 7],           // 0x4B — per-cell %
     pub fet_status: u16,             // 0x4A — bit 0: main FETs, bit 1: aux FET
     pub balancing_status: u16,       // 0x5F — bitmask, bit N = cell N+1 balancing
+    // Charging / AtRate (0x04–0x07, 0x14–0x15)
+    pub at_rate: i16,                         // 0x04 — mA, negative = discharge
+    pub at_rate_time_to_full: u16,            // 0x05 — minutes; 65535 = not charging
+    pub at_rate_time_to_empty: u16,           // 0x06 — minutes; 65535 = not discharging
+    pub at_rate_ok: u16,                      // 0x07 — 0 = battery would be exhausted
+    pub charging_current_ma: u16,             // 0x14 — mA
+    pub charging_voltage_mv: u16,             // 0x15 — mV
+    // Control (0x42, 0x60)
+    pub fet_state: u16,                       // 0x42 — bitfield, mirrors FETStatus
+    pub balancing_control: u16,               // 0x60 — bitmask, bit N enables balancing on cell N+1
+    // Per-cell extended (0x4C–0x4D)
+    pub cell_soh: [u8; 7],                    // 0x4C — per-cell state-of-health %
+    pub cell_remaining_capacity: [u16; 7],    // 0x4D — per-cell remaining capacity mAh
 }

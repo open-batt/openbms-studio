@@ -26,6 +26,7 @@ pub fn run() {
             commands::read_register,
             commands::write_register,
             commands::write_field,
+            commands::set_polling_interval,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

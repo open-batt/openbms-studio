@@ -104,6 +104,14 @@ pub fn write_register(
 }
 
 #[tauri::command]
+pub fn set_polling_interval(
+    state: State<'_, Arc<BmsState>>,
+    interval_ms: u64,
+) {
+    *state.interval_ms.lock().unwrap() = interval_ms;
+}
+
+#[tauri::command]
 pub fn write_field(
     register: String,
     field: String,
