@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
+import { useEffect, useState } from "react";
 import type { BmsData } from "../bindings/BmsData";
 import type { CommsError } from "../bindings/CommsError";
 

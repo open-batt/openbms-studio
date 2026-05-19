@@ -1,7 +1,7 @@
-import classes from "@/components/Navbar/index.module.css";
 import { ActionIcon, Stack, Tooltip } from "@mantine/core";
-import { GearIcon } from "@phosphor-icons/react";
-import { FC } from "react";
+import type { GearIcon } from "@phosphor-icons/react";
+import type { FC } from "react";
+import classes from "@/components/Navbar/index.module.css";
 
 interface NavbarLinkProps {
     icon: typeof GearIcon;

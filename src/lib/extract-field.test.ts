@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { extractField, applyField } from "./extract-field";
+import { describe, expect, it } from "vitest";
 import type { FieldDef, RegisterValue } from "../bindings";
+import { applyField, extractField } from "./extract-field";
 
 describe("extractField", () => {
     it("extracts bit 15 when set", () => {

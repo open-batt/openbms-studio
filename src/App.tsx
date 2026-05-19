@@ -2,20 +2,12 @@
 // All packages except `@mantine/hooks` require styles imports
 import "@mantine/core/styles.css";
 
-import OpenBMSSVG from "@/assets/favicon.svg";
-import { Aside } from "@/components/Aside";
-import { ConnectionGroup } from "@/components/ConnectionGroup";
-import { Navbar } from "@/components/Navbar";
-import { GraphsView } from "@/components/views/GraphsView";
-import { LogsView } from "@/components/views/LogsView";
-import { RegistersView } from "@/components/views/RegistersView";
-import { SettingsView } from "@/components/views/SettingsView";
 import {
     AppShell,
     Burger,
     createTheme,
     Group,
-    MantineColorsTuple,
+    type MantineColorsTuple,
     MantineProvider,
     ThemeIcon,
     Title,
@@ -28,7 +20,16 @@ import {
     GearIcon,
 } from "@phosphor-icons/react";
 import { useState } from "react";
+import OpenBMSSVG from "@/assets/favicon.svg";
+import { Aside } from "@/components/Aside";
+import { ConnectionGroup } from "@/components/ConnectionGroup";
 import { ConnectionStatus } from "@/components/ConnectionStatus";
+import { Navbar } from "@/components/Navbar";
+import { GraphsView } from "@/components/views/GraphsView";
+import { LogsView } from "@/components/views/LogsView";
+import { RegistersView } from "@/components/views/RegistersView";
+import { SettingsView } from "@/components/views/SettingsView";
+
 const purple: MantineColorsTuple = [
     "#f5efff",
     "#e4dcf6",

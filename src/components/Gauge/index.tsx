@@ -1,5 +1,5 @@
-import { useMemo } from "react";
 import ReactECharts from "echarts-for-react";
+import { useMemo } from "react";
 
 interface GaugeProps {
     value: number;

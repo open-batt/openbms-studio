@@ -1,4 +1,4 @@
-import { Group, NativeSelect, Button } from "@mantine/core";
+import { Button, Group, NativeSelect } from "@mantine/core";
 import classes from "@/components/ConnectionGroup/index.module.css";
 
 export function ConnectionGroup() {
