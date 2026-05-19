@@ -1,22 +1,21 @@
+import { listen } from "@tauri-apps/api/event";
 import {
     createContext,
-    useContext,
-    useState,
-    useEffect,
     type ReactNode,
+    useContext,
+    useEffect,
+    useState,
 } from "react";
-import { listen } from "@tauri-apps/api/event";
 import type { BmsData } from "@/bindings/BmsData";
+import { useSettings } from "@/contexts/SettingsContext";
 import { MOCK_DATASETS } from "@/mocks/datasets";
-
-const MOCK_DATA_CYCLE_MS = 5000;
 
 interface BmsDataContextType {
     bmsData: BmsData | null;
     error: string | null;
 }
 
-const BmsDataContext = createContext<BmsDataContextType | null>(null);
+export const BmsDataContext = createContext<BmsDataContextType | null>(null);
 
 export const TauriBmsDataProvider = ({ children }: { children: ReactNode }) => {
     const [bmsData, setBmsData] = useState<BmsData | null>(null);
@@ -57,15 +56,16 @@ export const TauriBmsDataProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export const MockBmsDataProvider = ({ children }: { children: ReactNode }) => {
+    const { settings } = useSettings();
     const [idx, setIdx] = useState(0);
 
     useEffect(() => {
         const interval = setInterval(() => {
             setIdx((i) => (i + 1) % MOCK_DATASETS.length);
-        }, MOCK_DATA_CYCLE_MS);
+        }, settings.refreshIntervalMs);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [settings.refreshIntervalMs]);
 
     return (
         <BmsDataContext.Provider

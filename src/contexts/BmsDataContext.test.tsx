@@ -1,11 +1,22 @@
-import { render, screen, act } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
-import { MockBmsDataProvider, useBmsDataContext } from "./BmsDataContext";
+import { act, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MOCK_DATASETS } from "@/mocks/datasets";
+import { SettingsProvider } from "./SettingsContext";
+import { MockBmsDataProvider, useBmsDataContext } from "./BmsDataContext";
+
+const DEFAULT_INTERVAL_MS = 1000;
 
 function DataDisplay() {
     const { bmsData } = useBmsDataContext();
     return <div data-testid="soc">{bmsData?.relative_soc ?? "null"}</div>;
+}
+
+function Wrapper({ children }: { children: React.ReactNode }) {
+    return (
+        <SettingsProvider>
+            <MockBmsDataProvider>{children}</MockBmsDataProvider>
+        </SettingsProvider>
+    );
 }
 
 describe("MockBmsDataProvider", () => {
@@ -18,24 +29,16 @@ describe("MockBmsDataProvider", () => {
     });
 
     it("provides the first dataset immediately", () => {
-        render(
-            <MockBmsDataProvider>
-                <DataDisplay />
-            </MockBmsDataProvider>,
-        );
+        render(<DataDisplay />, { wrapper: Wrapper });
         expect(screen.getByTestId("soc").textContent).toBe(
             String(MOCK_DATASETS[0].bmsData.relative_soc),
         );
     });
 
-    it("advances to next dataset after 5 seconds", () => {
-        render(
-            <MockBmsDataProvider>
-                <DataDisplay />
-            </MockBmsDataProvider>,
-        );
+    it("advances to next dataset after 1 second", () => {
+        render(<DataDisplay />, { wrapper: Wrapper });
         act(() => {
-            vi.advanceTimersByTime(5000);
+            vi.advanceTimersByTime(DEFAULT_INTERVAL_MS);
         });
         expect(screen.getByTestId("soc").textContent).toBe(
             String(MOCK_DATASETS[1].bmsData.relative_soc),
@@ -43,13 +46,9 @@ describe("MockBmsDataProvider", () => {
     });
 
     it("wraps back to dataset 0 after all datasets", () => {
-        render(
-            <MockBmsDataProvider>
-                <DataDisplay />
-            </MockBmsDataProvider>,
-        );
+        render(<DataDisplay />, { wrapper: Wrapper });
         act(() => {
-            vi.advanceTimersByTime(5000 * MOCK_DATASETS.length);
+            vi.advanceTimersByTime(DEFAULT_INTERVAL_MS * MOCK_DATASETS.length);
         });
         expect(screen.getByTestId("soc").textContent).toBe(
             String(MOCK_DATASETS[0].bmsData.relative_soc),
