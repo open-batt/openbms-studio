@@ -61,6 +61,7 @@ const views = [
 export default function App() {
     const [opened, { toggle }] = useDisclosure();
     const [viewIndex, setViewIndex] = useState(0);
+    const ActiveView = views[viewIndex].element;
 
     return (
         <MantineProvider defaultColorScheme="dark" theme={theme}>
@@ -110,7 +111,7 @@ export default function App() {
                     />
                 </AppShell.Navbar>
 
-                <AppShell.Main>{views[viewIndex].element()}</AppShell.Main>
+                <AppShell.Main><ActiveView /></AppShell.Main>
                 <AppShell.Footer pl="md">
                     <ConnectionStatus />
                 </AppShell.Footer>
