@@ -26,7 +26,7 @@ export function GraphsView() {
 
     return (
         <Stack h="100%" gap="xs">
-            <Group justify="flex-end" gap="sm">
+            <Group justify="flex-end" gap="sm" align="flex-end">
                 <NumberInput
                     label="Time range (s)"
                     value={windowSec}
@@ -36,12 +36,7 @@ export function GraphsView() {
                     size="xs"
                     w={130}
                 />
-                <Button
-                    variant="outline"
-                    size="xs"
-                    onClick={clear}
-                    style={{ alignSelf: "flex-end" }}
-                >
+                <Button variant="outline" size="xs" onClick={clear}>
                     Clear Graphs
                 </Button>
             </Group>
@@ -59,7 +54,7 @@ export function GraphsView() {
                             </Paper>
                             <Stack
                                 w={180}
-                                gap={4}
+                                gap="xs"
                                 p="xs"
                                 style={{ flexShrink: 0 }}
                             >
