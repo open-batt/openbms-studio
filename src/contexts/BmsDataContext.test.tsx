@@ -1,8 +1,8 @@
 import { act, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MOCK_DATASETS } from "@/mocks/datasets";
-import { SettingsProvider } from "./SettingsContext";
 import { MockBmsDataProvider, useBmsDataContext } from "./BmsDataContext";
+import { SettingsProvider } from "./SettingsContext";
 
 const DEFAULT_INTERVAL_MS = 1000;
 
