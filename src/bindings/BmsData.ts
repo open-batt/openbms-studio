@@ -19,4 +19,22 @@ export type BmsData = {
     cell_soc: [number, number, number, number, number, number, number];
     fet_status: number;
     balancing_status: number;
+    at_rate: number;
+    at_rate_time_to_full: number;
+    at_rate_time_to_empty: number;
+    at_rate_ok: number;
+    charging_current_ma: number;
+    charging_voltage_mv: number;
+    fet_state: number;
+    balancing_control: number;
+    cell_soh: [number, number, number, number, number, number, number];
+    cell_remaining_capacity: [
+        number,
+        number,
+        number,
+        number,
+        number,
+        number,
+        number,
+    ];
 };
