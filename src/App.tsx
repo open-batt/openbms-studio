@@ -94,6 +94,7 @@ export default function App() {
                                 <img
                                     src={OpenBMSSVG}
                                     style={{ width: "90%", height: "90%" }}
+                                    alt="OpenBMS Logo"
                                 ></img>
                             </ThemeIcon>
                             <Title order={2}>OpenBMS Studio</Title>
@@ -111,7 +112,9 @@ export default function App() {
                     />
                 </AppShell.Navbar>
 
-                <AppShell.Main><ActiveView /></AppShell.Main>
+                <AppShell.Main>
+                    <ActiveView />
+                </AppShell.Main>
                 <AppShell.Footer pl="md">
                     <ConnectionStatus />
                 </AppShell.Footer>

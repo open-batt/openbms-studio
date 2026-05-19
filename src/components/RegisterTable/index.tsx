@@ -59,8 +59,8 @@ export function RegisterTable({ title, entries }: Props) {
                     </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                    {rows.map((row, i) => (
-                        <Table.Tr key={i}>
+                    {rows.map((row) => (
+                        <Table.Tr key={row.label}>
                             <Table.Td>{row.label}</Table.Td>
                             <Table.Td>{row.address ?? "—"}</Table.Td>
                             <Table.Td>

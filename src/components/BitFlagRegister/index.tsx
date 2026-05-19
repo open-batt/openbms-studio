@@ -46,6 +46,7 @@ export function BitFlagRegister({ registers }: Props) {
                         {_(REGISTER_SIZE)
                             .times()
                             .map((_v, i) => (
+                                // biome-ignore lint/suspicious/noArrayIndexKey: index is the stable reference here
                                 <Table.Th key={`head-${i}`}>
                                     <Center>Bit {REGISTER_SIZE - i - 1}</Center>
                                 </Table.Th>
