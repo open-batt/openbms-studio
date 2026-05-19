@@ -75,7 +75,7 @@ export function ChartPanel({
     return (
         <ReactECharts
             option={option}
-            notMerge={false}
+            notMerge={true}
             lazyUpdate={true}
             style={{ width: "100%", height: "100%" }}
             opts={{ renderer: "canvas" }}
