@@ -1,13 +1,14 @@
 import { Button, Card, Center, Table, Text } from "@mantine/core";
 import _ from "lodash";
+import type { RegisterValue } from "@/bindings";
 import classes from "@/components/BitFlagRegister/index.module.css";
+import type { RegisterEntry } from "@/components/RegisterTable";
+import { useRegisterSubscription } from "@/contexts/ActiveRegistersContext";
 import {
+    formatRegisterHex,
     REGISTER_ADDR,
     REGISTER_META,
-    formatRegisterHex,
 } from "@/lib/display-meta";
-import type { RegisterValue } from "@/bindings";
-import type { RegisterEntry } from "@/components/RegisterTable";
 
 const REGISTER_SIZE = 16;
 
@@ -26,6 +27,9 @@ function getBit(value: RegisterValue, bit: number): boolean {
 }
 
 export function BitFlagRegister({ registers }: Props) {
+    const names = registers.map((r) => r.def.name);
+    const values = useRegisterSubscription(names);
+
     return (
         <Card>
             <Card.Section bg="purple" px="lg" h="xl">
@@ -49,7 +53,8 @@ export function BitFlagRegister({ registers }: Props) {
                     </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                    {registers.map(({ def, value }) => {
+                    {registers.map(({ def }) => {
+                        const value = values.get(def.name) ?? null;
                         const meta = REGISTER_META[def.name];
                         const addr = REGISTER_ADDR[def.name];
                         return (

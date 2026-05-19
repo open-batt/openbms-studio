@@ -1,5 +1,8 @@
 import { Card, Table, Text } from "@mantine/core";
+import { useMemo } from "react";
 import type { RegisterDef, RegisterValue } from "@/bindings";
+import { useRegisterSubscription } from "@/contexts/ActiveRegistersContext";
+import { cellRows, scalarRows } from "./rows";
 
 export interface RegisterEntry {
     def: RegisterDef;
@@ -15,10 +18,30 @@ export interface RegisterRow {
 
 interface Props {
     title: string;
-    rows: RegisterRow[];
+    entries: RegisterEntry[];
 }
 
-export function RegisterTable({ title, rows }: Props) {
+function isCellEntry(entry: RegisterEntry): boolean {
+    return (
+        entry.def.fields.length > 0 &&
+        "PrimitiveArray" in entry.def.fields[0].field_type
+    );
+}
+
+export function RegisterTable({ title, entries }: Props) {
+    const names = useMemo(() => entries.map((e) => e.def.name), [entries]);
+    const values = useRegisterSubscription(names);
+
+    const enriched: RegisterEntry[] = entries.map((e) => ({
+        ...e,
+        value: values.get(e.def.name) ?? null,
+    }));
+
+    const rows =
+        enriched.length === 1 && isCellEntry(enriched[0])
+            ? cellRows(enriched[0])
+            : scalarRows(enriched);
+
     return (
         <Card>
             <Card.Section bg="purple" px="lg" h="xl">
