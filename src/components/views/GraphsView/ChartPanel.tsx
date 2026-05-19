@@ -7,19 +7,27 @@ interface ChartPanelProps {
     group: ChartGroupDef;
     history: HistoryEntry[];
     visibilityMap: Record<string, boolean>;
+    windowSec: number;
 }
 
-export function ChartPanel({ group, history, visibilityMap }: ChartPanelProps) {
+export function ChartPanel({
+    group,
+    history,
+    visibilityMap,
+    windowSec,
+}: ChartPanelProps) {
     const option = useMemo(() => {
         const t0 = history.length > 0 ? history[0].t : 0;
-        const xData = history.map((e) => ((e.t - t0) / 1000).toFixed(1));
 
         const series = group.series
             .filter((s) => visibilityMap[s.id] !== false)
             .map((s) => ({
                 name: s.label,
                 type: "line" as const,
-                data: history.map((e) => s.getValue(e.data)),
+                data: history.map((e) => [
+                    (e.t - t0) / 1000,
+                    s.getValue(e.data),
+                ]),
                 lineStyle: { color: s.color, width: 1.5 },
                 itemStyle: { color: s.color },
                 showSymbol: false,
@@ -34,9 +42,14 @@ export function ChartPanel({ group, history, visibilityMap }: ChartPanelProps) {
                 left: 8,
             },
             xAxis: {
-                type: "category" as const,
-                data: xData,
-                axisLabel: { color: "#888888", fontSize: 10 },
+                type: "value" as const,
+                min: 0,
+                max: windowSec,
+                axisLabel: {
+                    color: "#888888",
+                    fontSize: 10,
+                    formatter: (v: number) => v.toFixed(2),
+                },
                 axisLine: { lineStyle: { color: "#444444" } },
                 axisTick: { show: false },
                 name: "s",
@@ -46,14 +59,18 @@ export function ChartPanel({ group, history, visibilityMap }: ChartPanelProps) {
                 type: "value" as const,
                 name: group.unit,
                 nameTextStyle: { color: "#888888", fontSize: 10 },
-                axisLabel: { color: "#888888", fontSize: 10 },
+                axisLabel: {
+                    color: "#888888",
+                    fontSize: 10,
+                    formatter: (v: number) => v.toFixed(2),
+                },
                 axisLine: { show: false },
                 splitLine: { lineStyle: { color: "#333333" } },
             },
             series,
             grid: { left: 60, right: 8, top: 30, bottom: 28 },
         };
-    }, [history, group, visibilityMap]);
+    }, [history, group, visibilityMap, windowSec]);
 
     return (
         <ReactECharts
