@@ -180,7 +180,6 @@ pub fn write_field(
 #[tauri::command]
 pub fn read_config(state: State<'_, Arc<BmsState>>) -> Result<crate::config::BmsConfig, String> {
     use crate::config::BmsConfig;
-    use crate::register_map::addr;
 
     let mut guard = state.transport.lock().unwrap();
     let t = guard.as_mut().ok_or_else(|| BmsError::NotConnected.to_string())?;
@@ -223,8 +222,6 @@ pub fn write_config(
     config: crate::config::BmsConfig,
     state: State<'_, Arc<BmsState>>,
 ) -> Result<(), String> {
-    use crate::register_map::addr;
-
     let mut guard = state.transport.lock().unwrap();
     let t = guard.as_mut().ok_or_else(|| BmsError::NotConnected.to_string())?;
 
