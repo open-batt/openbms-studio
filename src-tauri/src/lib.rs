@@ -16,6 +16,8 @@ pub fn run() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_fs::init())
         .manage(Arc::new(BmsState::new()))
         .invoke_handler(tauri::generate_handler![
             commands::list_ports,
@@ -28,6 +30,8 @@ pub fn run() {
             commands::write_register,
             commands::write_field,
             commands::set_polling_interval,
+            commands::read_config,
+            commands::write_config,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -35,7 +39,7 @@ pub fn run() {
 
 #[cfg(test)]
 mod ts_export {
-    use crate::{bms_data::BmsData, error::CommsError, types::*};
+    use crate::{bms_data::BmsData, config::BmsConfig, error::CommsError, types::*};
     use ts_rs::TS;
 
     #[test]
@@ -49,5 +53,6 @@ mod ts_export {
         PrimitiveType::export_all().unwrap();
         BmsData::export_all().unwrap();
         CommsError::export_all().unwrap();
+        BmsConfig::export_all().unwrap();
     }
 }

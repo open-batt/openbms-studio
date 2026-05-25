@@ -1,4 +1,5 @@
 export type { Access } from "./Access";
+export type { BmsConfig } from "./BmsConfig";
 export type { BmsData } from "./BmsData";
 export type { CommsError } from "./CommsError";
 export type { FieldDef } from "./FieldDef";
