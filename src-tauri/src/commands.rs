@@ -176,3 +176,85 @@ pub fn write_field(
         FieldType::PrimitiveArray { .. } => Err("array fields are not writable via write_field".into()),
     }
 }
+
+#[tauri::command]
+pub fn read_config(state: State<'_, Arc<BmsState>>) -> Result<crate::config::BmsConfig, String> {
+    use crate::config::BmsConfig;
+    use crate::register_map::addr;
+
+    let mut guard = state.transport.lock().unwrap();
+    let t = guard.as_mut().ok_or_else(|| BmsError::NotConnected.to_string())?;
+
+    macro_rules! rword {
+        ($name:expr) => {{
+            let a = addr($name).ok_or_else(|| format!("unknown register {}", $name))?;
+            t.read_word(a.address).map_err(|e| e.to_string())?
+        }};
+    }
+    macro_rules! rblock {
+        ($name:expr) => {{
+            let a = addr($name).ok_or_else(|| format!("unknown register {}", $name))?;
+            let bytes = t.read_block(a.address, a.num_registers).map_err(|e| e.to_string())?;
+            bytes[..a.byte_count as usize].to_vec()
+        }};
+    }
+
+    Ok(BmsConfig {
+        version: 1,
+        battery_mode:          rword!("BatteryMode"),
+        at_rate:               rword!("AtRate") as i16,
+        charging_current_ma:   rword!("ChargingCurrent"),
+        charging_voltage_mv:   rword!("ChargingVoltage"),
+        configuration:         rword!("Configuration"),
+        main_control:          rword!("MainControl"),
+        fet_state:             rword!("FETState"),
+        balancing_control:     rword!("BalancingControl"),
+        protection_voltage:    rblock!("VoltageProtectionControl"),
+        protection_current:    rblock!("CurrentProtectionControl"),
+        protection_temperature:rblock!("TemperatureProtectionControl"),
+        calibration_current:   rblock!("CurrentSensorCalibration"),
+        calibration_voltage:   rblock!("VoltageCalibration"),
+        calibration_temperature:rblock!("TemperatureCalibration"),
+    })
+}
+
+#[tauri::command]
+pub fn write_config(
+    config: crate::config::BmsConfig,
+    state: State<'_, Arc<BmsState>>,
+) -> Result<(), String> {
+    use crate::register_map::addr;
+
+    let mut guard = state.transport.lock().unwrap();
+    let t = guard.as_mut().ok_or_else(|| BmsError::NotConnected.to_string())?;
+
+    macro_rules! wword {
+        ($name:expr, $val:expr) => {{
+            let a = addr($name).ok_or_else(|| format!("unknown register {}", $name))?;
+            t.write_word(a.address, $val).map_err(|e| e.to_string())?;
+        }};
+    }
+    macro_rules! wblock {
+        ($name:expr, $val:expr) => {{
+            let a = addr($name).ok_or_else(|| format!("unknown register {}", $name))?;
+            t.write_block(a.address, &$val).map_err(|e| e.to_string())?;
+        }};
+    }
+
+    wword!("BatteryMode",              config.battery_mode);
+    wword!("AtRate",                   config.at_rate as u16);
+    wword!("ChargingCurrent",          config.charging_current_ma);
+    wword!("ChargingVoltage",          config.charging_voltage_mv);
+    wword!("Configuration",            config.configuration);
+    wword!("MainControl",              config.main_control);
+    wword!("FETState",                 config.fet_state);
+    wword!("BalancingControl",         config.balancing_control);
+    wblock!("VoltageProtectionControl",    config.protection_voltage);
+    wblock!("CurrentProtectionControl",    config.protection_current);
+    wblock!("TemperatureProtectionControl",config.protection_temperature);
+    wblock!("CurrentSensorCalibration",    config.calibration_current);
+    wblock!("VoltageCalibration",          config.calibration_voltage);
+    wblock!("TemperatureCalibration",      config.calibration_temperature);
+
+    Ok(())
+}
