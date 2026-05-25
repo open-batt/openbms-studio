@@ -19,6 +19,7 @@ import {
     ArticleIcon,
     ChartLineIcon,
     CpuIcon,
+    FloppyDiskIcon,
     GearIcon,
 } from "@phosphor-icons/react";
 import { useState } from "react";
@@ -27,6 +28,7 @@ import { Aside } from "@/components/Aside";
 import { ConnectionGroup } from "@/components/ConnectionGroup";
 import { ConnectionStatus } from "@/components/ConnectionStatus";
 import { Navbar } from "@/components/Navbar";
+import { ConfigView } from "@/components/views/ConfigView";
 import { GraphsView } from "@/components/views/GraphsView";
 import { LogsView } from "@/components/views/LogsView";
 import { RegistersView } from "@/components/views/RegistersView";
@@ -57,6 +59,7 @@ const views = [
     { icon: CpuIcon, label: "Registers", element: RegistersView },
     { icon: ChartLineIcon, label: "Graphs", element: GraphsView },
     { icon: ArticleIcon, label: "Logs", element: LogsView },
+    { icon: FloppyDiskIcon, label: "Config", element: ConfigView },
     { icon: GearIcon, label: "Settings", element: SettingsView },
 ];
 
