@@ -234,7 +234,19 @@ pub fn write_config(
     macro_rules! wblock {
         ($name:expr, $val:expr) => {{
             let a = addr($name).ok_or_else(|| format!("unknown register {}", $name))?;
-            t.write_block(a.address, &$val).map_err(|e| e.to_string())?;
+            if $val.len() != a.byte_count as usize {
+                return Err(format!(
+                    "register {}: expected {} bytes, got {}",
+                    $name,
+                    a.byte_count,
+                    $val.len()
+                ));
+            }
+            let mut bytes = $val.clone();
+            if bytes.len() % 2 != 0 {
+                bytes.push(0);
+            }
+            t.write_block(a.address, &bytes).map_err(|e| e.to_string())?;
         }};
     }
 

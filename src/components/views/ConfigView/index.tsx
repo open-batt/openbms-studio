@@ -38,11 +38,11 @@ export function ConfigView() {
 
     async function handleSaveToFile() {
         if (!boardConfig) return;
-        const path = await save({
-            filters: [{ name: "BMS Config", extensions: ["json"] }],
-        });
-        if (!path) return;
         try {
+            const path = await save({
+                filters: [{ name: "BMS Config", extensions: ["json"] }],
+            });
+            if (!path) return;
             await writeTextFile(path, JSON.stringify(boardConfig, null, 2));
             notifications.show({
                 title: "Saved",
@@ -58,14 +58,39 @@ export function ConfigView() {
         }
     }
 
+    const REQUIRED_FIELDS: (keyof BmsConfig)[] = [
+        "version",
+        "battery_mode",
+        "at_rate",
+        "charging_current_ma",
+        "charging_voltage_mv",
+        "configuration",
+        "main_control",
+        "fet_state",
+        "balancing_control",
+        "protection_voltage",
+        "protection_current",
+        "protection_temperature",
+        "calibration_current",
+        "calibration_voltage",
+        "calibration_temperature",
+    ];
+
     async function handleLoadFromFile() {
-        const path = await open({
-            filters: [{ name: "BMS Config", extensions: ["json"] }],
-        });
-        if (!path) return;
         try {
+            const path = await open({
+                filters: [{ name: "BMS Config", extensions: ["json"] }],
+            });
+            if (!path) return;
             const raw = await readTextFile(path);
-            setFileConfig(JSON.parse(raw) as BmsConfig);
+            const parsed = JSON.parse(raw) as BmsConfig;
+            const missing = REQUIRED_FIELDS.filter((f) => !(f in parsed));
+            if (missing.length > 0) {
+                throw new Error(
+                    `Invalid config file. Missing fields: ${missing.join(", ")}`,
+                );
+            }
+            setFileConfig(parsed);
         } catch (e) {
             notifications.show({
                 title: "Load failed",
