@@ -7,6 +7,7 @@ pub mod transport;
 pub mod register_map;
 pub mod polling;
 pub mod commands;
+pub mod config;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
