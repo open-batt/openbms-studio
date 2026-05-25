@@ -16,9 +16,9 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { Notifications } from "@mantine/notifications";
 import {
-    ArticleIcon,
     ChartLineIcon,
     CpuIcon,
+    FlaskIcon,
     FloppyDiskIcon,
     GearIcon,
 } from "@phosphor-icons/react";
@@ -30,9 +30,9 @@ import { ConnectionStatus } from "@/components/ConnectionStatus";
 import { Navbar } from "@/components/Navbar";
 import { ConfigView } from "@/components/views/ConfigView";
 import { GraphsView } from "@/components/views/GraphsView";
-import { LogsView } from "@/components/views/LogsView";
 import { RegistersView } from "@/components/views/RegistersView";
 import { SettingsView } from "@/components/views/SettingsView";
+import { TestsView } from "@/components/views/TestsView";
 
 const purple: MantineColorsTuple = [
     "#f5efff",
@@ -58,7 +58,7 @@ const theme = createTheme({
 const views = [
     { icon: CpuIcon, label: "Registers", element: RegistersView },
     { icon: ChartLineIcon, label: "Graphs", element: GraphsView },
-    { icon: ArticleIcon, label: "Logs", element: LogsView },
+    { icon: FlaskIcon, label: "Tests", element: TestsView },
     { icon: FloppyDiskIcon, label: "Config", element: ConfigView },
     { icon: GearIcon, label: "Settings", element: SettingsView },
 ];
