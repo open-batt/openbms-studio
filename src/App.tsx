@@ -1,6 +1,7 @@
 // Import styles of packages that you've installed.
 // All packages except `@mantine/hooks` require styles imports
 import "@mantine/core/styles.css";
+import "@mantine/notifications/styles.css";
 
 import {
     AppShell,
@@ -13,6 +14,7 @@ import {
     Title,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { Notifications } from "@mantine/notifications";
 import {
     ArticleIcon,
     ChartLineIcon,
@@ -65,6 +67,7 @@ export default function App() {
 
     return (
         <MantineProvider defaultColorScheme="dark" theme={theme}>
+            <Notifications />
             <AppShell
                 padding="md"
                 header={{ height: 60 }}
