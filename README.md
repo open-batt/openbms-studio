@@ -1,7 +1,30 @@
-# Tauri + React + Typescript
+# OpenBMS Studio
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+Desktop application for monitoring and configuring OpenBMS boards over Modbus RTU via USB-serial.
 
-## Recommended IDE Setup
+Built with [Tauri v2](https://tauri.app) (Rust backend) + React 19 + TypeScript.
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+## Requirements
+
+- [Node.js](https://nodejs.org) (via nvm recommended)
+- [Rust toolchain](https://rustup.rs) (for the full desktop app)
+
+## Development
+
+```bash
+# UI only (no Rust required)
+npm run dev
+
+# Full desktop app
+npm run tauri dev
+```
+
+## Build
+
+```bash
+npm run tauri build
+```
+
+## License
+
+[LICENSE](LICENSE)
