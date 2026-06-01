@@ -8,6 +8,7 @@ const host = process.env.TAURI_DEV_HOST;
 
 // https://vite.dev/config/
 export default defineConfig(async () => ({
+    base: process.env.GITHUB_PAGES ? "/openbms-studio/" : "/",
     plugins: [react()],
     test: {
         environment: "jsdom",
