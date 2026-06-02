@@ -4,6 +4,8 @@ Desktop application for monitoring and configuring OpenBMS boards over Modbus RT
 
 Built with [Tauri v2](https://tauri.app) (Rust backend) + React 19 + TypeScript.
 
+**Live demo:** https://open-batt.github.io/openbms-studio/
+
 ## Requirements
 
 - [Node.js](https://nodejs.org) (via nvm recommended)
